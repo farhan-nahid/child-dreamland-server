@@ -36,6 +36,13 @@ async function run() {
     const reviewCollection = database.collection('reviews');
     const orderCollection = database.collection('orders');
     const userCollection = database.collection('users');
+
+    // POST A USER
+
+    app.post('/user', async (req, res) => {
+      const result = await userCollection.insertOne(req.body);
+      res.json(result);
+    });
   } finally {
     // client.close()
   }
