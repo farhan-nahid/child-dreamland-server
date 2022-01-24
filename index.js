@@ -58,7 +58,7 @@ async function run() {
 
     // PUT admin & check with JWT Token  he/she is admin or not ?
 
-    app.put('/user/admin', async (req, res) => {
+    app.put('/user/admin', verifyJwtToken, async (req, res) => {
       const newAdmin = req.body;
       const email = req.decodedEmail;
       if (email) {
