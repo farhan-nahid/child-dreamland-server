@@ -44,7 +44,7 @@ async function run() {
   try {
     client.connect();
     const database = client.db(`${process.env.DB_NAME}`);
-    const productCollection = database.collection('courses');
+    const courseCollection = database.collection('courses');
     const reviewCollection = database.collection('reviews');
     const orderCollection = database.collection('orders');
     const userCollection = database.collection('users');
@@ -84,6 +84,28 @@ async function run() {
         isAdmin = true;
       }
       res.json({ admin: isAdmin });
+    });
+
+    // POST A SINGLE courses
+
+    app.post('/add-course', async (req, res) => {
+      const result = await courseCollection.insertOne(req.body);
+      res.json(result);
+    });
+
+    // GET ALL courses
+
+    app.get('/all-courses', async (req, res) => {
+      const cursor = courseCollection.find({});
+      const courses = await cursor.toArray();
+      res.json(courses);
+    });
+
+    // POST A SINGLE ORDER
+
+    app.post('/add-order', async (req, res) => {
+      const result = await orderCollection.insertOne(req.body);
+      res.json(result);
     });
   } finally {
     // client.close()
