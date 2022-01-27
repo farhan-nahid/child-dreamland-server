@@ -3,6 +3,7 @@ const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const admin = require('firebase-admin');
 require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -119,6 +120,18 @@ async function run() {
     app.post('/add-order', async (req, res) => {
       const result = await orderCollection.insertOne(req.body);
       res.json(result);
+    });
+
+    app.post('/create-payment-intent', async (req, res) => {
+      const paymentInfo = req.body;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: paymentInfo.price * 100,
+        currency: 'usd',
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+      res.send({ clientSecret: paymentIntent.client_secret });
     });
 
     /* 

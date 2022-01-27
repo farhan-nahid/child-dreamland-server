@@ -17,6 +17,6 @@
     "express": "^4.17.2",
     "firebase-admin": "^10.0.1",
     "mongodb": "^4.2.2",
-    "stripe": "^8.194.0"
+    "stripe": "^8.200.0"
   }
 }
