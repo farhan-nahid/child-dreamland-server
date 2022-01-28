@@ -3,7 +3,6 @@ const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const admin = require('firebase-admin');
 require('dotenv').config();
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,6 +22,8 @@ admin.initializeApp({
 // CONNECT WITH MONGODB
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.2xoju.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -45,6 +46,7 @@ async function run() {
   try {
     client.connect();
     const database = client.db(`${process.env.DB_NAME}`);
+    const assignmentCollection = database.collection('assignments');
     const courseCollection = database.collection('courses');
     const reviewCollection = database.collection('reviews');
     const orderCollection = database.collection('orders');
@@ -76,6 +78,14 @@ async function run() {
       res.json(courses);
     });
 
+    // GET ALL ASSIGNMENTS
+
+    app.get('/all-assignments', async (req, res) => {
+      const cursor = assignmentCollection.find({});
+      const assignments = await cursor.toArray();
+      res.json(assignments);
+    });
+
     // GET A SINGLE COURSE
 
     app.get('/course/:id', async (req, res) => {
@@ -99,25 +109,30 @@ async function run() {
       res.json(orders);
     });
 
-    // GET ALL USERS
-
     /* 
     
                                                    POST APIS
     
     */
 
-    // POST A USER
+    // POST A SINGLE USER
 
     app.post('/user', async (req, res) => {
       const result = await userCollection.insertOne(req.body);
       res.json(result);
     });
 
-    // POST A SINGLE COURSES
+    // POST A SINGLE COURSE
 
     app.post('/add-course', async (req, res) => {
       const result = await courseCollection.insertOne(req.body);
+      res.json(result);
+    });
+
+    // POST A SINGLE ASSIGNMENT
+
+    app.post('/add-assignment', async (req, res) => {
+      const result = await assignmentCollection.insertOne(req.body);
       res.json(result);
     });
 
