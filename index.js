@@ -61,8 +61,7 @@ async function run() {
     // GET ADMIN OR NOT?
 
     app.get('/user', verifyJwtToken, async (req, res) => {
-      const email = req.decodedEmail;
-      if (email) {
+      if (req.decodedEmail) {
         const user = await userCollection.findOne({ email: req.query.email });
         let isAdmin = false;
         if (user?.role === 'Admin') {
@@ -101,8 +100,7 @@ async function run() {
     // GET SINGLE USERS
 
     app.get('/users', verifyJwtToken, async (req, res) => {
-      const email = req.decodedEmail;
-      if (email) {
+      if (req.decodedEmail) {
         const cursor = await userCollection.findOne({ email: req.query.email });
         res.json(cursor);
       } else {
@@ -113,8 +111,7 @@ async function run() {
     // GET MY ORDERS
 
     app.get('/orders', verifyJwtToken, async (req, res) => {
-      const email = req.decodedEmail;
-      if (email) {
+      if (req.decodedEmail) {
         const cursor = await orderCollection.find({ 'billing_details.email': req.query.email });
         const orders = await cursor.toArray();
         res.json(orders);
