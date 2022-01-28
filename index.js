@@ -91,9 +91,15 @@ async function run() {
       res.json(cursor);
     });
 
-    // GET ALL USERS
+    // GET MY ORDERS
 
-    app.get('/all-users', verifyJwtToken, async (req, res) => {});
+    app.get('/orders', async (req, res) => {
+      const cursor = await orderCollection.find({ 'billing_details.email': req.query.email });
+      const orders = await cursor.toArray();
+      res.json(orders);
+    });
+
+    // GET ALL USERS
 
     /* 
     
