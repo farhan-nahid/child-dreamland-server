@@ -60,14 +60,18 @@ async function run() {
 
     // GET ADMIN OR NOT?
 
-    app.get('/user/:email', async (req, res) => {
-      const query = { email: req.params.email };
-      const user = await userCollection.findOne(query);
-      let isAdmin = false;
-      if (user?.role === 'Admin') {
-        isAdmin = true;
+    app.get('/user', verifyJwtToken, async (req, res) => {
+      const email = req.decodedEmail;
+      if (email) {
+        const user = await userCollection.findOne({ email: req.query.email });
+        let isAdmin = false;
+        if (user?.role === 'Admin') {
+          isAdmin = true;
+        }
+        res.json({ admin: isAdmin });
+      } else {
+        res.status(401).json({ message: 'You do not have access to see Who is the admin of this website..' });
       }
-      res.json({ admin: isAdmin });
     });
 
     // GET ALL COURSES
@@ -96,17 +100,27 @@ async function run() {
 
     // GET SINGLE USERS
 
-    app.get('/normal-users/:email', async (req, res) => {
-      const cursor = await userCollection.findOne({ email: req.params.email });
-      res.json(cursor);
+    app.get('/users', verifyJwtToken, async (req, res) => {
+      const email = req.decodedEmail;
+      if (email) {
+        const cursor = await userCollection.findOne({ email: req.query.email });
+        res.json(cursor);
+      } else {
+        res.status(401).json({ message: 'You do not have access to see user Information' });
+      }
     });
 
     // GET MY ORDERS
 
-    app.get('/orders', async (req, res) => {
-      const cursor = await orderCollection.find({ 'billing_details.email': req.query.email });
-      const orders = await cursor.toArray();
-      res.json(orders);
+    app.get('/orders', verifyJwtToken, async (req, res) => {
+      const email = req.decodedEmail;
+      if (email) {
+        const cursor = await orderCollection.find({ 'billing_details.email': req.query.email });
+        const orders = await cursor.toArray();
+        res.json(orders);
+      } else {
+        res.status(401).json({ message: 'You do not have access to see orders' });
+      }
     });
 
     /* 
@@ -181,7 +195,7 @@ async function run() {
           res.json(result);
         }
       } else {
-        req.status(401).json({ message: 'You do not have access to make admin' });
+        res.status(401).json({ message: 'You do not have access to make admin' });
       }
     });
   } finally {
@@ -190,5 +204,5 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.get('/', (req, res) => res.send('Welcome to pathshala Server API'));
+app.get('/', (req, res) => res.send('Welcome to Pathshala Server API'));
 app.listen(port, () => console.log(`Server Running on localhost:${port}`));
