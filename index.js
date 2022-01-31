@@ -119,6 +119,12 @@ async function run() {
         res.status(401).json({ message: 'You do not have access to see orders' });
       }
     });
+    /* 
+    app.get('/all-users', verifyJwtToken, async (req, res) => {
+      const cursor = userCollection.find({});
+      const users = await cursor.toArray();
+      res.json(users);
+    }); */
 
     /* 
     
@@ -177,6 +183,16 @@ async function run() {
                                                    UPDATE APIS
     
     */
+
+    app.put('/edit-profile', async (req, res) => {
+      const { birthDate, description, address, motherName, fatherName, fullName, phNumber } = req.body;
+      const filter = { email: req.query.email };
+      const updatingProfile = {
+        $set: { birthDate, description, address, fatherName, motherName, fullName, phNumber },
+      };
+      const result = userCollection.updateOne(filter, updatingProfile);
+      res.json(result);
+    });
 
     // PUT admin & check with JWT Token  he/she is admin or not ?
 
