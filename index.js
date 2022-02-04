@@ -119,12 +119,12 @@ async function run() {
         res.status(401).json({ message: 'You do not have access to see orders' });
       }
     });
-    /* 
-    app.get('/all-users', verifyJwtToken, async (req, res) => {
-      const cursor = userCollection.find({});
+
+    app.get('/all-users', async (req, res) => {
+      const cursor = userCollection.find({ position: req.query.position });
       const users = await cursor.toArray();
       res.json(users);
-    }); */
+    });
 
     /* 
     
