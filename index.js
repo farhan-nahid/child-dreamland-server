@@ -14,7 +14,7 @@ app.use(express.json());
 
 // FIREBASE Service Account
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -217,5 +217,5 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.get('/', (req, res) => res.send('Welcome to Pathshala Server API'));
+app.get('/', (req, res) => res.send('Welcome to Child Dreamland Server API'));
 app.listen(port, () => console.log(`Server Running on localhost:${port}`));
